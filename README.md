@@ -1,0 +1,1 @@
+# afrosynergy-assets
