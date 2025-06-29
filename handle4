@@ -1,0 +1,89 @@
+// FunnelMatchMessage.tsx — Updated for full customization
+
+import { useEffect, useState } from "react" import { motion } from "framer-motion" import { addPropertyControls, ControlType } from "framer"
+
+export default function FunnelMatchMessage(props) { const { minValue, maxValue, generateRandom, loadDuration, backgroundColor, textColor, fontSize, fontWeight, letterSpacing, shadowColor, shadowBlur, shadowOffsetX, shadowOffsetY, barColor, barBgColor, barHeight, showConfetti, soundURL, messageBefore, messageAfter, } = props
+
+const [value, setValue] = useState(minValue)
+const [loaded, setLoaded] = useState(false)
+
+useEffect(() => {
+    const finalValue = generateRandom
+        ? Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue
+        : maxValue
+
+    let frame = 0
+    const totalFrames = loadDuration * 60
+    const interval = setInterval(() => {
+        frame++
+        const progress = frame / totalFrames
+        const current = Math.floor(minValue + (finalValue - minValue) * progress)
+        setValue(current)
+        if (frame >= totalFrames) {
+            clearInterval(interval)
+            setLoaded(true)
+        }
+    }, 1000 / 60)
+
+    if (soundURL) {
+        const audio = new Audio(soundURL)
+        audio.play().catch(() => {})
+    }
+}, [])
+
+return (
+    <div
+        style={{
+            background: backgroundColor,
+            padding: 24,
+            borderRadius: 16,
+            color: textColor,
+            fontSize,
+            fontWeight,
+            letterSpacing,
+            boxShadow: `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowColor}`,
+            textAlign: "center",
+            position: "relative",
+        }}
+    >
+        <p>
+            {messageBefore} <strong>{value}</strong> {messageAfter}
+        </p>
+        <div
+            style={{
+                marginTop: 16,
+                width: "100%",
+                height: barHeight,
+                background: barBgColor,
+                borderRadius: barHeight / 2,
+                overflow: "hidden",
+            }}
+        >
+            <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: loadDuration, ease: "easeInOut" }}
+                style={{
+                    height: "100%",
+                    background: barColor,
+                    borderRadius: barHeight / 2,
+                }}
+            />
+        </div>
+        {loaded && showConfetti && (
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                style={{ fontSize: 32, marginTop: 16 }}
+            >
+                🎉🎊✨💥
+            </motion.div>
+        )}
+    </div>
+)
+
+}
+
+addPropertyControls(FunnelMatchMessage, { minValue: { type: ControlType.Number, defaultValue: 20 }, maxValue: { type: ControlType.Number, defaultValue: 100 }, generateRandom: { type: ControlType.Boolean, defaultValue: true }, loadDuration: { type: ControlType.Number, defaultValue: 2 }, backgroundColor: { type: ControlType.Color, defaultValue: "#ffffff" }, textColor: { type: ControlType.Color, defaultValue: "#000000" }, fontSize: { type: ControlType.Number, defaultValue: 24 }, fontWeight: { type: ControlType.Enum, options: ["normal", "bold", "lighter", "bolder"], defaultValue: "bold", }, letterSpacing: { type: ControlType.Number, defaultValue: 0 }, shadowColor: { type: ControlType.Color, defaultValue: "#ccc" }, shadowBlur: { type: ControlType.Number, defaultValue: 8 }, shadowOffsetX: { type: ControlType.Number, defaultValue: 2 }, shadowOffsetY: { type: ControlType.Number, defaultValue: 2 }, barColor: { type: ControlType.Color, defaultValue: "#1cd62b" }, barBgColor: { type: ControlType.Color, defaultValue: "#e6f5eb" }, barHeight: { type: ControlType.Number, defaultValue: 16 }, showConfetti: { type: ControlType.Boolean, defaultValue: true }, soundURL: { type: ControlType.String, defaultValue: "" }, messageBefore: { type: ControlType.String, defaultValue: "We found" }, messageAfter: { type: ControlType.String, defaultValue: "opportunities matching your interest." }, })
+
