@@ -1,0 +1,1 @@
+export default function EnhancedNavbar() { return <div>Navbar</div> }

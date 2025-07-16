@@ -1,0 +1,1 @@
+export default function EnhancedSidebar() { return <div>Sidebar</div> }
